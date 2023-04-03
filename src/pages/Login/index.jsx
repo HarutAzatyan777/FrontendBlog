@@ -20,7 +20,7 @@ export const Login = () => {
   const {
     register,
     handleSubmit,
-    setError,
+   
     formState:{errors,isValid}
   }=useForm({
     defaultValues:{
@@ -30,9 +30,21 @@ export const Login = () => {
     mode:'onChange'
   });
 
-  const onSubmit = (values)=>{
-dispatch(fetchAuth(values))
-  }
+  const onSubmit = async(values) => {
+    const data = await dispatch(fetchAuth(values));;
+    
+    if (!data.payload) {
+  return alert("Invalid authentication")
+}
+
+    if ("token" in data.payload) {
+      window.localStorage.setItem("token", data.payload.token);
+    } else {
+      alert("Invalid authentication")
+    }
+  };
+
+
 
 
   if(isAuth){
@@ -61,7 +73,7 @@ dispatch(fetchAuth(values))
       helperText={errors.password?.message}
       {...register('password',{required:'укажите пароль  '})}
       fullWidth />
-      <Button type="submit" size="large" variant="contained" fullWidth>
+      <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>
         Войти
       </Button>
      </form>
